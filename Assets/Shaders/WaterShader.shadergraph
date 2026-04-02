@@ -1729,6 +1729,7 @@
     "m_OutputNode": {
         "m_Id": ""
     },
+    "m_SubDatas": [],
     "m_ActiveTargets": [
         {
             "m_Id": "59d7f7a74c2c4e979acf682c8d65c76a"
@@ -2777,7 +2778,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0
@@ -3342,7 +3343,8 @@
     },
     "m_TextureType": 0,
     "m_NormalMapSpace": 0,
-    "m_EnableGlobalMipBias": true
+    "m_EnableGlobalMipBias": true,
+    "m_MipSamplingMode": 0
 }
 
 {
@@ -3422,7 +3424,7 @@
     "m_StageCapability": 3,
     "m_BareResource": false,
     "m_Texture": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "m_DefaultType": 0
@@ -5549,6 +5551,7 @@
     "m_SGVersion": 1,
     "m_Type": "UnityEditor.Rendering.Universal.ShaderGraph.UniversalTarget",
     "m_ObjectId": "59d7f7a74c2c4e979acf682c8d65c76a",
+    "m_Datas": [],
     "m_ActiveSubTarget": {
         "m_Id": "94446beca3c7486780d36f910d22de5f"
     },
@@ -5561,6 +5564,7 @@
     "m_AlphaClip": false,
     "m_CastShadows": true,
     "m_ReceiveShadows": true,
+    "m_SupportsLODCrossFade": false,
     "m_CustomEditorGUI": "",
     "m_SupportVFX": false
 }
@@ -7728,7 +7732,7 @@
     "hlslDeclarationOverride": 1,
     "m_Hidden": false,
     "m_Value": {
-        "m_SerializedTexture": "{\"texture\":{\"instanceID\":0}}",
+        "m_SerializedTexture": "",
         "m_Guid": ""
     },
     "isMainTexture": false,
@@ -7945,7 +7949,7 @@
     "m_ObjectId": "9a992714a1e24bf6ad9b40ed2d2dcfd2",
     "m_Title": "Top Texture",
     "m_Position": {
-        "x": -2173.999755859375,
+        "x": -2174.0,
         "y": -1816.0
     }
 }
@@ -10192,7 +10196,7 @@
     "m_ObjectId": "cc3b4eb7eeae407bb8155b479ffd0ab0",
     "m_Title": "Procedural Wave Height",
     "m_Position": {
-        "x": -3639.0,
+        "x": -3804.0,
         "y": -522.0
     }
 }

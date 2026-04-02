@@ -105,7 +105,7 @@ namespace NSMB.Utils {
                     count++;
             }
             if (count > 0)
-                nickname += $"({count})";
+                nickname += $" ({count})";
 
             //update cache
             nicknameCache[player.UserId ?? "none"] = nickname;

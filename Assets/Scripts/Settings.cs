@@ -45,9 +45,7 @@ public class Settings : Singleton<Settings> {
     }
 
     public void LoadSettingsFromPreferences() {
-        nickname = PlayerPrefs.GetString("Nickname");
-        if (nickname == null || nickname == "")
-            nickname = "Player" + Random.Range(1000, 10000);
+        nickname = PlayerPrefs.GetString("Nickname", "Player" + string.Format("{0:D4}", Random.Range(0, 9999)));
 
         VolumeSFX = PlayerPrefs.GetFloat("volumeSFX", 0.5f);
         VolumeMusic = PlayerPrefs.GetFloat("volumeMusic", 0.25f);

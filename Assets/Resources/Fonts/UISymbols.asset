@@ -67,6 +67,7 @@ MonoBehaviour:
     m_StyleName: 
     m_PointSize: 0
     m_Scale: 0
+    m_UnitsPerEM: 0
     m_LineHeight: 0
     m_AscentLine: 0
     m_CapLine: 0
@@ -439,7 +440,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 28
     m_GlyphRect:
       m_X: 0
-      m_Y: 36
+      m_Y: 80
       m_Width: 20
       m_Height: 20
     m_Scale: 1
@@ -456,7 +457,7 @@ MonoBehaviour:
       m_HorizontalAdvance: 28
     m_GlyphRect:
       m_X: 20
-      m_Y: 36
+      m_Y: 80
       m_Width: 20
       m_Height: 20
     m_Scale: 1

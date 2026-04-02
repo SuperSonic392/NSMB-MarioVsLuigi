@@ -35,11 +35,12 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
 
     public int levelMinTileX, levelMinTileY, levelWidthTile, levelHeightTile;
     public float cameraMinY, cameraHeightY, cameraMinX = -1000, cameraMaxX = 1000;
-    public bool loopingLevel = true;
+    public bool loopingLevel = true, 
+        jankyFortressCeilingnCheckM8; //named after the funny comment in PlayerController's ForceCrouchCheck function
     public Vector3 spawnpoint;
     public Tilemap tilemap;
     [ColorUsage(false)] public Color levelUIColor = new(24, 178, 170);
-    public bool spawnBigPowerups = true, spawnVerticalPowerups = true;
+    public Enums.PowerupType spawnPowerupTypes;
     public string levelDesigner = "", richPresenceId = "", levelName = "Unknown";
     private TileBase[] originalTiles;
     private BoundsInt origin;
@@ -56,7 +57,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     private LoopingMusic loopMusic;
     public Enums.MusicState? musicState = null;
 
-    public GameObject localPlayer;
+    public List<GameObject> localPlayers;
     public bool paused, loaded, started;
     public GameObject pauseUI, pausePanel, pauseButton, hostExitUI, hostExitButton;
     public bool gameover = false, musicEnabled = false;
@@ -98,27 +99,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
             string prefab = (string) table[0];
             int viewId = (int) table[7];
 
-            //Debug.Log((sender.IsMasterClient ? "[H] " : "") + sender.NickName + " (" + sender.UserId + ") - Instantiating " + prefab);
-
-            //even the host can't be trusted...
-            if ((sender?.IsMasterClient ?? false) && (prefab.Contains("Static") || prefab.Contains("1-Up") || (musicEnabled && prefab.Contains("Player")))) {
-                //abandon ship
-                PhotonNetwork.Disconnect();
-                return;
-            }
-
-            //server room instantiation
-            if (sender == null || sender.IsMasterClient)
-                return;
-
-            PlayerController controller = players.FirstOrDefault(pl => sender == pl.photonView.Owner);
-            bool invalidProjectile = controller.state != Enums.PowerupState.FireFlower && prefab.Contains("Fireball");
-            invalidProjectile |= controller.state != Enums.PowerupState.IceFlower && prefab.Contains("Iceball");
-
-            if (prefab.Contains("Enemy") || prefab.Contains("Powerup") || prefab.Contains("Static") || prefab.Contains("Bump") || prefab.Contains("BigStar") || prefab.Contains("Coin") || ((!nonSpectatingPlayers.Contains(sender) || musicEnabled) && prefab.Contains("Player"))) {
-                PhotonNetwork.CloseConnection(sender);
-                PhotonNetwork.DestroyPlayerObjects(sender);
-            }
+            Debug.Log((sender.IsMasterClient ? "[H] " : "") + sender.NickName + " (" + sender.UserId + ") - Instantiating " + prefab);
 
             break;
         }
@@ -136,8 +117,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
             if (!(sender?.IsMasterClient ?? false))
                 return;
 
-            Player winner = (Player) customData;
-            StartCoroutine(EndGame(winner));
+            StartCoroutine(EndGame((int)customData));
             break;
         }
         case (byte) Enums.NetEventIds.SetTile: {
@@ -357,8 +337,14 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         }
 
         //SYNCHRONIZE PLAYER STATE
-        if (localPlayer)
-            localPlayer.GetComponent<PlayerController>().UpdateGameState();
+
+        if (localPlayers.Count() > 0)
+        {
+            foreach (GameObject localPlayer in localPlayers)
+            {
+                localPlayer.GetComponent<PlayerController>().UpdateGameState();
+            }
+        }
 
         //SYNCHRONIZE TILEMAPS
         if (PhotonNetwork.IsMasterClient) {
@@ -381,7 +367,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         if (musicEnabled && FindObjectsOfType<PlayerController>().Length <= 0) {
             //all players left.
             if (PhotonNetwork.IsMasterClient)
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, -1, NetworkUtils.EventAll, SendOptions.SendReliable);
         }
     }
 
@@ -432,6 +418,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
             PhotonNetwork.CreateRoom("Debug", new() {
                 CustomRoomProperties = NetworkUtils.DefaultRoomProperties
             });
+            PhotonNetwork.LocalPlayer.NickName = Settings.Instance.nickname;
         }
 
         nonSpectatingPlayers = PhotonNetwork.CurrentRoom.Players.Values.Where(pl => !pl.IsSpectator()).ToHashSet();
@@ -450,8 +437,9 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         PhotonNetwork.IsMessageQueueRunning = true;
 
         if (!GlobalController.Instance.joinedAsSpectator) {
-            localPlayer = PhotonNetwork.Instantiate("Prefabs/" + Utils.GetCharacterData().prefab, spawnpoint, Quaternion.identity, 0);
-            localPlayer.GetComponent<Rigidbody2D>().isKinematic = true;
+            SpawnPlayer(Utils.GetCharacterData().prefab, true, PhotonNetwork.LocalPlayer.GetUniqueNickname(), PhotonNetwork.IsMasterClient, Utils.GetPlayerColor(PhotonNetwork.LocalPlayer, 1f, 1f), 0, string.Empty);
+
+            SpawnDummy();
 
             RaiseEventOptions options = new() { Receivers = ReceiverGroup.Others, CachingOption = EventCaching.AddToRoomCache };
             SendAndExecuteEvent(Enums.NetEventIds.PlayerFinishedLoading, null, SendOptions.SendReliable, options);
@@ -460,6 +448,24 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         }
 
         brickBreak = ((GameObject) Instantiate(Resources.Load("Prefabs/Particle/BrickBreak"))).GetComponent<ParticleSystem>();
+    }
+
+    public void SpawnDummy()
+    {
+        string dummyCharacter = "PlayerLuigi";
+        if (Utils.GetCharacterData().prefab == dummyCharacter)
+        {
+            dummyCharacter = "PlayerMario";
+        }
+        SpawnPlayer(dummyCharacter, false, PhotonNetwork.LocalPlayer.GetUniqueNickname() + "'s Dummy", false, new Color(0.75f, 0.75f, 0.75f), 1, string.Empty);
+    }
+
+    public void SpawnPlayer(string prefab, bool isMe, string nickname, bool displayHostBadge, Color glowColor, int spawnLayer, string team)
+    {
+        GameObject localPlayer = PhotonNetwork.Instantiate("Prefabs/" + prefab, spawnpoint, Quaternion.identity, 0, new object[] { isMe, nickname, displayHostBadge, new Vector3(glowColor.r, glowColor.g, glowColor.b), spawnLayer, team });
+        localPlayer.GetComponent<Rigidbody2D>().isKinematic = true;
+
+        localPlayers.Add(localPlayer);
     }
 
     private void CheckIfAllLoaded() {
@@ -535,8 +541,13 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
                 foreach (EnemySpawnpoint point in FindObjectsOfType<EnemySpawnpoint>())
                     point.AttemptSpawning();
 
-            if (localPlayer)
-                localPlayer.GetComponent<PlayerController>().OnGameStart();
+            if (localPlayers.Count() > 0)
+            {
+                foreach(GameObject localPlayer in localPlayers)
+                {
+                    localPlayer.GetComponent<PlayerController>().OnGameStart();
+                }
+            }
         }
 
         startServerTime = startTimestamp + 3500;
@@ -577,12 +588,18 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         }
     }
 
-    private IEnumerator EndGame(Player winner) {
+    private IEnumerator EndGame(int winnerView)
+    {
+        PlayerController winner = null;
+        if (winnerView > 0)
+        {
+            winner = PhotonView.Find(winnerView).GetComponent<PlayerController>();
+        }
         PhotonNetwork.CurrentRoom.SetCustomProperties(new() { [Enums.NetRoomProperties.GameStarted] = false });
         gameover = true;
         music.Stop();
         GameObject text = GameObject.FindWithTag("wintext");
-        text.GetComponent<TMP_Text>().text = winner != null ? $"{ winner.GetUniqueNickname() } Wins!" : "It's a draw...";
+        text.GetComponent<TMP_Text>().text = winner != null ? $"{ winner.Nickname } Wins!" : "It's a draw...";
 
         yield return new WaitForSecondsRealtime(1);
         text.GetComponent<Animator>().SetTrigger("start");
@@ -591,7 +608,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         mixer.SetFloat("MusicSpeed", 1f);
         mixer.SetFloat("MusicPitch", 1f);
 
-        bool win = winner != null && winner.IsLocal;
+        bool win = winner != null && winner.isMe;
         bool draw = winner == null;
         int secondsUntilMenu;
         secondsUntilMenu = draw ? 5 : 4;
@@ -675,7 +692,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
                 }
             }
             if (SpectationManager.Spectating && allNull) {
-                StartCoroutine(EndGame(null));
+                StartCoroutine(EndGame(-1));
                 return;
             }
         }
@@ -720,11 +737,11 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         //LIVES CHECKS
         if (alivePlayers.Count == 0) {
             //everyone's dead...? ok then, draw?
-            PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, -1, NetworkUtils.EventAll, SendOptions.SendReliable);
             return;
         } else if (alivePlayers.Count == 1 && playerCount >= 2) {
             //one player left alive (and not in a solo game). winner!
-            PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, alivePlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
+            PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, alivePlayers[0].photonView.ViewID, NetworkUtils.EventAll, SendOptions.SendReliable);
             return;
         }
         //TIMED CHECKS
@@ -733,15 +750,15 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
             //time up! check who has most stars, if a tie keep playing, if draw is on end game in a draw
             if (draw)
                 // it's a draw! Thanks for playing the demo!
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, -1, NetworkUtils.EventAll, SendOptions.SendReliable);
             else if (winningPlayers.Count == 1)
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.ViewID, NetworkUtils.EventAll, SendOptions.SendReliable);
 
             return;
         }
         if (starGame && winningStars >= starRequirement) {
             if (winningPlayers.Count == 1)
-                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.Owner, NetworkUtils.EventAll, SendOptions.SendReliable);
+                PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, winningPlayers[0].photonView.ViewID, NetworkUtils.EventAll, SendOptions.SendReliable);
 
             return;
         }
@@ -819,7 +836,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
     public void HostEndMatch() {
         pauseUI.SetActive(false);
         sfx.PlayOneShot(Enums.Sounds.UI_Decide.GetClip());
-        PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, null, NetworkUtils.EventAll, SendOptions.SendReliable);
+        PhotonNetwork.RaiseEvent((byte) Enums.NetEventIds.EndGame, -1, NetworkUtils.EventAll, SendOptions.SendReliable);
     }
 
     public void Quit() {

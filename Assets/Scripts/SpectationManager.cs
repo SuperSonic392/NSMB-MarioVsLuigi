@@ -24,13 +24,11 @@ public class SpectationManager : MonoBehaviour {
     public PlayerController TargetPlayer {
         get => _targetPlayer;
         set {
-            if (_targetPlayer)
-                _targetPlayer.cameraController.IsControllingCamera = false;
-
             _targetPlayer = value;
             if (value != null) {
                 UpdateSpectateUI();
-                value.cameraController.IsControllingCamera = true;
+
+                CameraController.playerControllingCamera[0] = _targetPlayer.photonView.ViewID;
             }
         }
     }

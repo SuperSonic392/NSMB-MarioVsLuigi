@@ -47,17 +47,35 @@ public class FrozenCube : HoldableEntity {
 
             Bounds bounds = default;
             GameObject rendererObject = entityView.gameObject;
-            Renderer[] renderers = entityView.GetComponentsInChildren<Renderer>();
-            foreach (Renderer renderer in renderers) {
-                if (!renderer.enabled || renderer is ParticleSystemRenderer)
-                    continue;
-
-                renderer.ResetBounds();
-
-                if (bounds == default)
-                    bounds = new(renderer.bounds.center, renderer.bounds.size);
+            if (entity is PlayerController con)
+            {
+                if (con.MainHitbox.size.y > .5f)
+                {
+                    bounds.center = con.transform.position + (Vector3.up * .5f);
+                    bounds.size = new Vector3(.5f, 1, .5f);
+                }
                 else
-                    bounds.Encapsulate(renderer.bounds);
+                {
+                    bounds.center = con.transform.position + (Vector3.up * .25f);
+                    bounds.size = new Vector3(.5f, .5f, .5f);
+                }
+            }
+            else
+            {
+                Renderer[] renderers = entityView.GetComponentsInChildren<Renderer>();
+                foreach (Renderer renderer in renderers)
+                {
+                    if (!renderer.enabled || renderer is ParticleSystemRenderer)
+                        continue;
+
+                    renderer.ResetBounds();
+
+                    if (bounds == default)
+                        bounds = new(renderer.bounds.center, renderer.bounds.size);
+                    else
+                        bounds.Encapsulate(renderer.bounds);
+                }
+
             }
 
             hitbox.size = spriteRenderer.size = GetComponent<BoxCollider2D>().size = bounds.size;

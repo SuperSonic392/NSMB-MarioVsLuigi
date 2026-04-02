@@ -51,8 +51,9 @@ public class UIUpdater : MonoBehaviour {
         uiDebug.text = "<mark=#000000b0 padding=\"20, 20, 20, 20\"><font=\"defaultFont\">Ping: " + (int) pingSample + "ms</font>";
 
         //Player stuff update.
-        if (!player && GameManager.Instance.localPlayer)
-            player = GameManager.Instance.localPlayer.GetComponent<PlayerController>();
+        PlayerController playerWithCamera = PhotonView.Find(CameraController.playerControllingCamera[0]).GetComponent<PlayerController>();
+        if (!player && playerWithCamera)
+            player = playerWithCamera;
 
         if (!player) {
             if (!uiHidden)

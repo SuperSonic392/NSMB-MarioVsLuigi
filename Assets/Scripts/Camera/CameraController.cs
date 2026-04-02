@@ -2,6 +2,7 @@
 using UnityEngine;
 
 using NSMB.Utils;
+using Photon.Pun;
 
 public class CameraController : MonoBehaviour {
 
@@ -9,13 +10,14 @@ public class CameraController : MonoBehaviour {
 
     public static float ScreenShake = 0;
     public Vector3 currentPosition;
-    public bool IsControllingCamera { get; set; } = false;
+    public int cameraID;
+    public static int[] playerControllingCamera = new int[1];
 
     private Vector2 airThreshold = new(0.5f, 1.3f), groundedThreshold = new(0.5f, 0f);
     private readonly List<SecondaryCameraPositioner> secondaryPositioners = new();
     private PlayerController controller;
     private Vector3 smoothDampVel, playerPos;
-    private Camera targetCamera;
+    public Camera targetCamera;
     private float startingZ, lastFloor;
 
     public void Awake() {
@@ -28,7 +30,7 @@ public class CameraController : MonoBehaviour {
 
     public void LateUpdate() {
         currentPosition = CalculateNewPosition();
-        if (IsControllingCamera) {
+        if (controller.photonView.ViewID == playerControllingCamera[cameraID]) {
 
             Vector3 shakeOffset = Vector3.zero;
             if ((ScreenShake -= Time.deltaTime) > 0 && controller.onGround)
@@ -81,7 +83,7 @@ public class CameraController : MonoBehaviour {
             currentPosition.x += (right ? -1 : 1) * GameManager.Instance.levelWidthTile / 2f;
             xDifference = Vector2.Distance(Vector2.right * currentPosition.x, Vector2.right * playerPos.x);
             right = currentPosition.x > playerPos.x;
-            if (IsControllingCamera)
+            if (playerControllingCamera[cameraID] == controller.photonView.ViewID)
                 BackgroundLoop.Instance.wrap = true;
         }
 

@@ -6,7 +6,7 @@ using NSMB.Utils;
 
 public class PlayerAnimationController : MonoBehaviourPun {
 
-    [SerializeField] private Avatar smallAvatar, largeAvatar;
+    [SerializeField] private Avatar avatar;
     [SerializeField] private ParticleSystem dust, sparkles, drillParticle, giantParticle, fireParticle;
     [SerializeField] private GameObject models, smallModel, largeModel, largeShellExclude, blueShell, propellerHelmet, propeller;
     [SerializeField] private Material glowMaterial;
@@ -24,7 +24,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
     public Color GlowColor {
         get {
             if (_glowColor == null)
-                _glowColor = Utils.GetPlayerColor(photonView.Owner);
+                _glowColor = controller.glowColor;
 
             return _glowColor ?? Color.white;
         }
@@ -34,7 +34,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
     AudioSource drillParticleAudio;
     [SerializeField] AudioClip normalDrill, propellerDrill;
 
-    Enums.PlayerEyeState eyeState;
+    [SerializeField]
+    private Enums.PlayerEyeState eyeState;
     float blinkTimer, pipeTimer, deathTimer, propellerVelocity;
     public bool deathUp, wasTurnaround, enableGlow;
 
@@ -49,7 +50,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
         if (photonView) {
             enableGlow = !photonView.IsMine;
-            if (!photonView.IsMine)
+            if (!controller.isMe)
                 GameManager.Instance.CreateNametag(controller);
 
             PlayerColorSet colorSet = GlobalController.Instance.skins[(int) photonView.Owner.CustomProperties[Enums.NetPlayerProperties.PlayerColor]];
@@ -158,7 +159,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
             }
         }
 
-        if (controller.cameraController.IsControllingCamera)
+        if (CameraController.playerControllingCamera[controller.cameraController.cameraID] == photonView.ViewID)
             HorizontalCamera.OFFSET_TARGET = (controller.flying || controller.propeller) ? 0.5f : 0f;
 
         if (controller.crouching || controller.sliding || controller.skidding) {
@@ -179,8 +180,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
     public void UpdateAnimatorStates() {
 
-        bool right = controller.joystick.x > 0.35f;
-        bool left = controller.joystick.x < -0.35f;
+        bool right = controller.InputController.joystick.x > 0.35f;
+        bool left = controller.InputController.joystick.x < -0.35f;
 
         animator.SetBool("onLeft", controller.wallSlideLeft);
         animator.SetBool("onRight", controller.wallSlideRight);
@@ -205,10 +206,17 @@ public class PlayerAnimationController : MonoBehaviourPun {
                 animatedVelocity = 0;
             } else if (controller.propeller) {
                 animatedVelocity = 2.5f;
-            } else if (controller.state == Enums.PowerupState.MegaMushroom && Mathf.Abs(controller.joystick.x) > .2f) {
+            } else if (controller.state == Enums.PowerupState.MegaMushroom && Mathf.Abs(controller.InputController.joystick.x) > .2f) {
                 animatedVelocity = 4.5f;
             } else if (left ^ right && !controller.hitRight && !controller.hitLeft) {
-                animatedVelocity = Mathf.Max(3.5f, animatedVelocity);
+                if (animatedVelocity < 2.813f)
+                {
+                    animatedVelocity = Mathf.Max(2.5f, animatedVelocity * 1.2442232492001421969427657305379f); //incredibly precise number to get 2.813 to 3.499
+                }
+                else
+                {
+                    animatedVelocity = Mathf.Max(3.5f, animatedVelocity);
+                }
             } else if (controller.onIce) {
                 animatedVelocity = 0;
             }
@@ -223,6 +231,16 @@ public class PlayerAnimationController : MonoBehaviourPun {
             animator.SetBool("mini", controller.state == Enums.PowerupState.MiniMushroom);
             animator.SetBool("mega", controller.state == Enums.PowerupState.MegaMushroom);
             animator.SetBool("inShell", controller.inShell || (controller.state == Enums.PowerupState.BlueShell && (controller.crouching || controller.groundpound) && controller.groundpoundCounter <= 0.15f));
+
+
+            if (!controller.onGround && controller.hitRoof)
+            {
+                animator.SetTrigger("headbump");
+            }
+            else
+            {
+                animator.ResetTrigger("headbump");
+            }
         } else {
             //controller.wallSlideLeft = animator.GetBool("onLeft");
             //controller.wallSlideRight = animator.GetBool("onRight");
@@ -292,8 +310,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
         largeShellExclude.SetActive(!animator.GetCurrentAnimatorStateInfo(0).IsName("in-shell"));
         propellerHelmet.SetActive(controller.state == Enums.PowerupState.PropellerMushroom);
-        animator.avatar = large ? largeAvatar : smallAvatar;
-        animator.runtimeAnimatorController = large ? controller.character.largeOverrides : controller.character.smallOverrides;
+        animator.avatar = avatar;
+        animator.runtimeAnimatorController = controller.character.animationController;
 
         HandleDeathAnimation();
         HandlePipeAnimation();
@@ -325,7 +343,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
             body.gravityScale = 1.2f;
             body.velocity = new Vector2(0, Mathf.Max(-deathForce, body.velocity.y));
         }
-        if (controller.photonView.IsMine && deathTimer + Time.fixedDeltaTime > (3 - 0.43f) && deathTimer < (3 - 0.43f))
+        if (controller.isMe && deathTimer + Time.fixedDeltaTime > (3 - 0.43f) && deathTimer < (3 - 0.43f))
             controller.fadeOut.FadeOutAndIn(0.33f, .1f);
 
         if (photonView.IsMine && deathTimer >= 3f)
@@ -386,6 +404,5 @@ public class PlayerAnimationController : MonoBehaviourPun {
         largeModel.SetActive(false);
         blueShell.SetActive(false);
         propellerHelmet.SetActive(false);
-        animator.avatar = smallAvatar;
     }
 }

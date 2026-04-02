@@ -1,20 +1,25 @@
 using UnityEngine;
 
-public class WrappingHitbox : MonoBehaviour {
+public class WrappingHitbox : MonoBehaviour
+{
 
     private Rigidbody2D body;
     private BoxCollider2D[] ourColliders, childColliders;
+    private bool cachedDoOffset = false;
+    private Vector2 cachedOffset;
     private Vector2 offset;
     private float levelMiddle, levelWidth;
 
-    public void Awake() {
+    public void Awake()
+    {
         body = GetComponent<Rigidbody2D>();
         if (!body)
             body = GetComponentInParent<Rigidbody2D>();
         ourColliders = GetComponents<BoxCollider2D>();
 
         // null propagation is ok w/ GameManager.Instance
-        if (!(GameManager.Instance?.loopingLevel ?? false)) {
+        if (!(GameManager.Instance?.loopingLevel ?? false))
+        {
             enabled = false;
             return;
         }
@@ -26,26 +31,60 @@ public class WrappingHitbox : MonoBehaviour {
         levelMiddle = GameManager.Instance.GetLevelMinX() + levelWidth / 2f;
         offset = new(levelWidth, 0);
 
-        LateUpdate();
+        FixedUpdate();
     }
 
-    public void LateUpdate() {
+    public void FixedUpdate()
+    { //I don't care to test if it's one frame delayed or not, it works
         for (int i = 0; i < ourColliders.Length; i++)
             UpdateChildColliders(i);
     }
 
-    private void UpdateChildColliders(int index) {
+    private void UpdateChildColliders(int index)
+    {
         BoxCollider2D ourCollider = ourColliders[index];
         BoxCollider2D childCollider = childColliders[index];
 
-        childCollider.autoTiling = ourCollider.autoTiling;
-        childCollider.edgeRadius = ourCollider.edgeRadius;
-        childCollider.enabled = ourCollider.enabled;
-        childCollider.isTrigger = ourCollider.isTrigger;
-        childCollider.offset = ourCollider.offset + (((body.position.x < levelMiddle) ? offset : -offset) / body.transform.lossyScale);
-        childCollider.sharedMaterial = ourCollider.sharedMaterial;
-        childCollider.size = ourCollider.size;
-        childCollider.usedByComposite = ourCollider.usedByComposite;
-        childCollider.usedByEffector = ourCollider.usedByComposite;
+        if (ourCollider.autoTiling != childCollider.autoTiling)
+        {
+            childCollider.autoTiling = ourCollider.autoTiling;
+        }
+        if (ourCollider.edgeRadius != childCollider.edgeRadius)
+        {
+            childCollider.edgeRadius = ourCollider.edgeRadius;
+        }
+        if (ourCollider.enabled != childCollider.enabled)
+        {
+            childCollider.enabled = ourCollider.enabled;
+        }
+        if (ourCollider.isTrigger != childCollider.isTrigger)
+        {
+            childCollider.isTrigger = ourCollider.isTrigger;
+        }
+
+        if (cachedDoOffset != body.position.x < levelMiddle || childCollider.offset != cachedOffset)
+        {
+            childCollider.offset = ourCollider.offset + (((body.position.x < levelMiddle) ? offset : -offset) / body.transform.lossyScale);
+        }
+
+        if (ourCollider.sharedMaterial != childCollider.sharedMaterial)
+        {
+            childCollider.sharedMaterial = ourCollider.sharedMaterial;
+        }
+        if (ourCollider.size != childCollider.size)
+        {
+            childCollider.size = ourCollider.size;
+        }
+        if (ourCollider.usedByComposite != childCollider.usedByComposite)
+        {
+            childCollider.usedByComposite = ourCollider.usedByComposite;
+        }
+        if (ourCollider.usedByEffector != childCollider.usedByEffector)
+        {
+            childCollider.usedByEffector = ourCollider.usedByEffector; //HEY IPOD, I FIXED YOUR OOPSIE!
+        }
+
+        cachedDoOffset = body.position.x < levelMiddle;
+        cachedOffset = ourCollider.offset;
     }
 }

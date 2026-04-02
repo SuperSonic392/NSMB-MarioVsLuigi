@@ -4,6 +4,7 @@ using Photon.Pun;
 public class FireballMover : MonoBehaviourPun {
 
     public bool left, isIceball;
+    public int owner;
 
     [SerializeField] private float speed = 3f, bounceHeight = 4.5f, terminalVelocity = 6.25f;
 
@@ -17,8 +18,9 @@ public class FireballMover : MonoBehaviourPun {
 
         object[] data = photonView.InstantiationData;
         left = (bool) data[0];
-        if (data.Length > 1 && isIceball)
-            speed += Mathf.Abs((float) data[1] / 3f);
+        owner = (int) data[1];
+        if (data.Length > 2 && isIceball)
+            speed += Mathf.Abs((float) data[2] / 3f);
 
         body.velocity = new Vector2(speed * (left ? -1 : 1), -speed);
     }

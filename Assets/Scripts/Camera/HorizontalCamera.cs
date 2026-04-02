@@ -25,11 +25,15 @@ public class HorizontalCamera : MonoBehaviour {
     }
 
     private void AdjustCamera() {
+#if UNITY_EDITOR
+        ourCamera.orthographicSize = orthoSize + OFFSET;
+#else
         float aspect = ourCamera.aspect;
         double size = orthoSize + OFFSET;
         // double size = orthographicSize;
         // Credit: https://forum.unity.com/threads/how-to-calculate-horizontal-field-of-view.16114/#post-2961964
         double aspectReciprocals = 1d / aspect;
         ourCamera.orthographicSize = Mathf.Min((float) size, (float) (size * (16d/9d) * aspectReciprocals));
+#endif
     }
 }

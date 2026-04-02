@@ -37,10 +37,11 @@ public class PipeButton : MonoBehaviour {
         }
     }
 
-    private void SetAnchor(Vector2 value) {
+    private void SetAnchor(Vector2 value)
+    {
         if (leftAnchored)
-            rect.anchorMax = value;
+            rect.anchorMax = Vector2.Lerp(rect.anchorMax, value, Time.deltaTime * 25);
         else
-            rect.anchorMin = value;
+            rect.anchorMin = Vector2.Lerp(rect.anchorMin, value, Time.deltaTime * 25);
     }
 }

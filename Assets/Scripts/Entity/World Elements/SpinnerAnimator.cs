@@ -30,7 +30,7 @@ public class SpinnerAnimator : MonoBehaviour {
         spinPercentage = Mathf.Clamp01(spinPercentage + (players ? 0.75f * Time.deltaTime : -1f * Time.deltaTime));
 
         topArmBone.eulerAngles += ((fastSpinSpeed * spinPercentage) + (idleSpinSpeed * (1-spinPercentage))) * Time.deltaTime;
-        topArmBone.localPosition = new Vector3(0, Mathf.Max(-0.084f, percentage * -0.07f), 0);
+        topArmBone.localPosition = new Vector3(0, Mathf.Max(-8.4f, percentage * -7f), 0);
     }
 
     public void OnTriggerExit2D(Collider2D collider) {

@@ -33,16 +33,19 @@ public static class Enums {
     #endregion
     #region ANIMATION & MUSIC
     // Animation enums
+    [System.Serializable]
     public enum PlayerEyeState {
         Normal, HalfBlink, FullBlink, Death
     }
     // Music Enums
+    [System.Serializable]
     public enum MusicState {
         Normal,
         MegaMushroom,
         Starman,
     }
     //Sound effects
+    [System.Serializable]
     public enum Sounds : byte {
 
         //CURRENT MAX: 94
@@ -213,6 +216,17 @@ public static class Enums {
         PlayerDamagePlayer = 40,
     }
     #endregion
+
+
+    [System.Flags]
+    public enum PowerupType
+    {
+        Big = 1 << 0, 
+        Vertical = 1 << 1, 
+        Custom = 1 << 2, 
+        Lives = 1 << 3, 
+        Modded = 1 << 4, 
+    }
 }
 
 public class SoundData : Attribute {

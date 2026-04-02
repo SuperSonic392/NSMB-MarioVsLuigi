@@ -1,6 +1,7 @@
 using UnityEngine;
-
+using Photon.Pun;
 using NSMB.Utils;
+using System;
 
 public class VolumeWithDistance : MonoBehaviour {
 
@@ -11,7 +12,28 @@ public class VolumeWithDistance : MonoBehaviour {
     public void Update() {
 
         GameManager inst = GameManager.Instance;
-        Vector3 listener = (inst != null && inst.localPlayer) ? inst.localPlayer.transform.position : Camera.main.transform.position;
+
+        GameObject closestLocalPlayer = null;
+        if (CameraController.playerControllingCamera.Length > 1)
+        {
+            float dist = Mathf.Infinity;
+            for (int i = 0; i < CameraController.playerControllingCamera.Length; i++)
+            {
+                GameObject player = PhotonView.Find(CameraController.playerControllingCamera[i]).gameObject;
+                float newDist = Vector2.Distance(player.transform.position, soundOrigin.transform.position);
+                if (newDist < dist)
+                {
+                    dist = newDist;
+                    closestLocalPlayer = player;
+                }
+            }
+        }
+        else
+        {
+            closestLocalPlayer = PhotonView.Find(CameraController.playerControllingCamera[0]).gameObject;
+        }
+
+        Vector3 listener = (inst != null && closestLocalPlayer != null) ? closestLocalPlayer.transform.position : Camera.main.transform.position;
 
         float volume = Utils.QuadraticEaseOut(1 - Mathf.Clamp01(Utils.WrappedDistance(listener, soundOrigin.position) / soundRange));
 

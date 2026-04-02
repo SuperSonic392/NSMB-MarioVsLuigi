@@ -18,15 +18,15 @@ public class BackgroundLoop : MonoBehaviour {
     #region Unity Methods
     public void Start() {
         Instance = this;
-
+        
         Transform t = GameObject.FindGameObjectWithTag("Backgrounds").transform;
-
+        
         children = new GameObject[t.childCount];
         ppus = new float[t.childCount];
         truePositions = new Vector3[t.childCount];
         positionsAfterPixelSnap = new Vector3[t.childCount];
         halfWidths = new float[t.childCount];
-
+        
         for (int i = 0; i < t.childCount; i++) {
             children[i] = t.GetChild(i).gameObject;
             SpriteRenderer sr = children[i].GetComponent<SpriteRenderer>();
@@ -34,12 +34,12 @@ public class BackgroundLoop : MonoBehaviour {
             halfWidths[i] = sr.bounds.extents.x - 0.00004f;
             positionsAfterPixelSnap[i] = truePositions[i] = children[i].transform.position;
         }
-
+        
         mainCamera = gameObject.GetComponent<Camera>();
         screenBounds = new Vector2(mainCamera.orthographicSize * mainCamera.aspect, mainCamera.orthographicSize) * 3f; // mainCamera.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, mainCamera.transform.position.z));
         foreach (GameObject obj in children)
             LoadChildObjects(obj);
-
+        
         lastPosition = transform.position;
     }
 

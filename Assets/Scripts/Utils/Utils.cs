@@ -405,18 +405,20 @@ namespace NSMB.Utils {
             GetCustomProperty(Enums.NetRoomProperties.StarRequirement, out int starsToWin);
             GetCustomProperty(Enums.NetRoomProperties.NewPowerups, out bool custom);
             GetCustomProperty(Enums.NetRoomProperties.Lives, out int livesOn);
-            bool lives = false;
-            if (livesOn > 0)
-                lives = true;
 
-            bool big = gm.spawnBigPowerups;
-            bool vertical = gm.spawnVerticalPowerups;
+            Enums.PowerupType allowedTypes = gm.spawnPowerupTypes;
+
+            if (custom)
+                allowedTypes |= Enums.PowerupType.Custom;
+
+            if (livesOn > 0)
+                allowedTypes |= Enums.PowerupType.Lives;
 
             float totalChance = 0;
             foreach (Powerup powerup in powerups) {
                 if (powerup.name == "MegaMushroom" && gm.musicState == Enums.MusicState.MegaMushroom)
                     continue;
-                if ((powerup.big && !big) || (powerup.vertical && !vertical) || (powerup.custom && !custom) || (powerup.lives && !lives))
+                if ((powerup.type & allowedTypes) != powerup.type)
                     continue;
 
                 totalChance += powerup.GetModifiedChance(starsToWin, leaderStars, ourStars);
@@ -426,7 +428,7 @@ namespace NSMB.Utils {
             foreach (Powerup powerup in powerups) {
                 if (powerup.name == "MegaMushroom" && gm.musicState == Enums.MusicState.MegaMushroom)
                     continue;
-                if ((powerup.big && !big) || (powerup.vertical && !vertical) || (powerup.custom && !custom) || (powerup.lives && !lives))
+                if ((powerup.type & allowedTypes) != powerup.type)
                     continue;
 
                 float chance = powerup.GetModifiedChance(starsToWin, leaderStars, ourStars);

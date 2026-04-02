@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 6
+  version: 7
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -21,17 +21,20 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: mat_luigi_big
-  m_Shader: {fileID: -6465566751694194690, guid: cc5645667770c9c44af52a452d76a115,
+  m_Shader: {fileID: -6465566751694194690, guid: 76e468769f500f748bfe31d9d158bbcd,
     type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _ADDITIONAL_LIGHTS
+  - _ADDITIONAL_LIGHTS_VERTEX
   m_InvalidKeywords: []
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: 2000
-  stringTagMap: {}
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Opaque
   disabledShaderPasses: []
   m_LockedProperties: 
   m_SavedProperties:
@@ -69,6 +72,10 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _EyeTextures:
+        m_Texture: {fileID: 18700000, guid: 86d0d983b7ffae444b5e270df0725c3a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 2800000, guid: 77032d0aaa50f124ea7cae92e342faf2, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -85,8 +92,24 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_1fe6a312de1141f98371e704419865ca_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: bf908df15cf09ba479146518dde4f6db, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_663389e9b6af44e491dc75b780cd62ae_Texture_1_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SpecGlossMap:
         m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _StarmanTextures:
+        m_Texture: {fileID: 18700000, guid: 33b7d186ea02eca4bb6150115991798e, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2DAsset_da3f5294a234437facff4e2f43ad730f_Out_0_Texture2D:
+        m_Texture: {fileID: 2800000, guid: bf908df15cf09ba479146518dde4f6db, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Textures:
@@ -107,12 +130,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - EyeState: 0
     - IsEyeTexture: 0
     - OutlineSize: 0.01
     - PowerupState: 0
+    - RainbowEnabled: 0
+    - _ADDITIONAL_LIGHTS: 1
+    - _ADDITIONAL_LIGHTS_VERTEX: 1
     - _AlphaClip: 0
+    - _AlphaToMask: 0
     - _Blend: 0
     - _BumpScale: 1
+    - _CastShadows: 1
     - _ClearCoatMask: 0
     - _ClearCoatSmoothness: 0
     - _Cull: 2
@@ -124,6 +153,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
+    - _IsEyeTexture: 0
     - _Metallic: 0
     - _Mode: 0
     - _MultiPowerupMaterial: 1
@@ -139,12 +169,14 @@ Material:
     - _Surface: 0
     - _UVSec: 0
     - _WorkflowMode: 1
+    - _ZTest: 4
     - _ZWrite: 1
+    - _ZWriteControl: 0
     m_Colors:
     - MultiplyColor: {r: 1, g: 1, b: 1, a: 0}
     - OutlineColor: {r: 0, g: 0, b: 0, a: 0}
-    - OverallsColor: {r: 0.21294737, g: 0.32941175, b: 0.094117604, a: 1}
-    - ShirtColor: {r: 0.31372547, g: 0.21960777, b: 0.21960777, a: 1}
+    - OverallsColor: {r: 0.21294734, g: 0.32941172, b: 0.094117574, a: 0}
+    - ShirtColor: {r: 0.31372544, g: 0.21960774, b: 0.21960774, a: 0}
     - _BaseColor: {r: 0.9063317, g: 0.9063317, b: 0.9063317, a: 1}
     - _Color: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
