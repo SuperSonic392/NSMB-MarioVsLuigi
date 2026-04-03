@@ -30,9 +30,11 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     public bool displayHostBadge;
     public Color glowColor;
     public int spawnLayer;
+    public int team;
 
-    public bool onTeam;
-    public string team;
+    public PlayerTether tether;
+
+    public bool inBubble;
 
     // == MONOBEHAVIOURS ==
 
@@ -453,7 +455,19 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
 
         groundpoundLastFrame = groundpound;
         previousOnGround = onGround;
-        if (!dead) {
+
+        if (inBubble)
+        {
+            body.gravityScale = 0;
+            body.velocity = Vector2.Lerp(body.velocity, Vector2.zero, Time.fixedDeltaTime);
+        }
+
+        if (!dead && tether != null)
+        {
+            tether.Tick();
+        }
+
+        if (!dead && !inBubble) {
             HandleBlockSnapping();
             bool snapped = GroundSnapCheck();
             HandleGroundCollision();
@@ -717,7 +731,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     public void OnTriggerEnter2D(Collider2D collider) {
-        if (!photonView.IsMine || dead || Frozen || pipeEntering || !MainHitbox.IsTouching(collider))
+        if (!photonView.IsMine || dead || inBubble || Frozen || pipeEntering || !MainHitbox.IsTouching(collider))
             return;
 
         HoldableEntity holdable = collider.GetComponentInParent<HoldableEntity>();
@@ -785,7 +799,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             return;
         }
 
-        if (!photonView.IsMine || dead || Frozen)
+        if (!photonView.IsMine || dead || inBubble || Frozen)
             return;
 
         double time = PhotonNetwork.Time;
@@ -835,7 +849,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (info.Sender != photonView.Owner || !PhotonNetwork.IsMasterClient)
             return;
 
-        if (dead || !spawned)
+        if (dead || inBubble || !spawned)
             return;
 
         //powerup doesn't eixst?
@@ -862,7 +876,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             return;
 
         PhotonView view;
-        if (dead || !(view = PhotonView.Find(actor)))
+        if (dead || inBubble || !(view = PhotonView.Find(actor)))
             return;
 
         MovingPowerup powerupObj = view.GetComponent<MovingPowerup>();
@@ -1064,7 +1078,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (info.Sender != photonView.Owner || !PhotonNetwork.IsMasterClient)
             return;
 
-        if (dead || !spawned)
+        if (dead || inBubble || !spawned)
             return;
 
         //star doesn't eixst?
@@ -1229,7 +1243,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     #region -- DEATH / RESPAWNING --
     [PunRPC]
     protected void Death(bool deathplane, bool fire) {
-        if (dead)
+        if (dead || inBubble)
             return;
 
         //if (info.Sender != photonView.Owner)
@@ -1742,7 +1756,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     void HandleLayerState() {
-        bool hitsNothing = animator.GetBool("pipe") || dead || stuckInBlock || giantStartTimer > 0 || (giantEndTimer > 0 && stationaryGiantEnd);
+        bool hitsNothing = animator.GetBool("pipe") || dead || inBubble || stuckInBlock || giantStartTimer > 0 || (giantEndTimer > 0 && stationaryGiantEnd);
         bool shouldntCollide = (hitInvincibilityCounter > 0 && invincible <= 0) || (knockback && !fireballKnockback);
 
         int layer = Layers.LayerDefault;
@@ -1756,7 +1770,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     bool GroundSnapCheck() {
-        if (dead || (body.velocity.y > 0 && !onGround) || !doGroundSnap || pipeEntering || gameObject.layer == Layers.LayerHitsNothing)
+        if (dead || inBubble || (body.velocity.y > 0 && !onGround) || !doGroundSnap || pipeEntering || gameObject.layer == Layers.LayerHitsNothing)
             return false;
 
         bool prev = Physics2D.queriesStartInColliders;
@@ -2466,7 +2480,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     private void HandleMovement(float delta) {
         functionallyRunning = running || state == Enums.PowerupState.MegaMushroom || propeller;
 
-        if (dead || !spawned)
+        if (dead || inBubble || !spawned)
             return;
 
         if (photonView.IsMine && body.position.y + transform.lossyScale.y < GameManager.Instance.GetLevelMinY()) {
@@ -2957,7 +2971,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
     }
 
     public bool CanPickup() {
-        return state != Enums.PowerupState.MiniMushroom && !skidding && !turnaround && !holding && running && !propeller && !flying && !crouching && !dead && !wallSlideLeft && !wallSlideRight && !doublejump && !triplejump && !groundpound;
+        return state != Enums.PowerupState.MiniMushroom && !skidding && !turnaround && !holding && running && !propeller && !flying && !crouching && !dead && !inBubble && !wallSlideLeft && !wallSlideRight && !doublejump && !triplejump && !groundpound;
     }
     void OnDrawGizmos() {
         if (!body)

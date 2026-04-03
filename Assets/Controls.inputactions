@@ -1076,6 +1076,11 @@
                     "devicePath": "<Gamepad>",
                     "isOptional": true,
                     "isOR": false
+                },
+                {
+                    "devicePath": "<Joystick>",
+                    "isOptional": true,
+                    "isOR": false
                 }
             ]
         }

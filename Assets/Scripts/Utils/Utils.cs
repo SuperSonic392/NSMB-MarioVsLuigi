@@ -46,6 +46,26 @@ namespace NSMB.Utils {
             return false;
         }
 
+        public static Vector3 UnwrapWorldLocation(Vector3 location, Vector3 reference, GameManager manager = null)
+        {
+            if (manager == null)
+                manager = GameManager.Instance;
+
+            if (!manager.loopingLevel)
+                return location;
+
+            float width = manager.levelWidthTile / 2;
+
+            float deltaX = location.x - reference.x;
+
+            if (deltaX > width / 2)
+                location.x -= width;
+            else if (deltaX < -width / 2)
+                location.x += width;
+
+            return location;
+        }
+
         public static void WrapTileLocation(ref Vector3Int tileLocation, GameManager manager = null) {
             if (manager == null)
                 manager = GameManager.Instance;

@@ -437,7 +437,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         PhotonNetwork.IsMessageQueueRunning = true;
 
         if (!GlobalController.Instance.joinedAsSpectator) {
-            SpawnPlayer(Utils.GetCharacterData().prefab, true, PhotonNetwork.LocalPlayer.GetUniqueNickname(), PhotonNetwork.IsMasterClient, Utils.GetPlayerColor(PhotonNetwork.LocalPlayer, 1f, 1f), 0, string.Empty);
+            SpawnPlayer(Utils.GetCharacterData().prefab, true, PhotonNetwork.LocalPlayer.GetUniqueNickname() + " 1", PhotonNetwork.IsMasterClient, Utils.GetPlayerColor(PhotonNetwork.LocalPlayer, 1f, 1f), 0, string.Empty);
 
             SpawnDummy();
 
@@ -457,7 +457,7 @@ public class GameManager : MonoBehaviour, IOnEventCallback, IInRoomCallbacks, IC
         {
             dummyCharacter = "PlayerMario";
         }
-        SpawnPlayer(dummyCharacter, false, PhotonNetwork.LocalPlayer.GetUniqueNickname() + "'s Dummy", false, new Color(0.75f, 0.75f, 0.75f), 1, string.Empty);
+        SpawnPlayer(dummyCharacter, true, PhotonNetwork.LocalPlayer.GetUniqueNickname() + " 2", true, new Color(0.75f, 0.75f, 0.75f), 1, string.Empty);
     }
 
     public void SpawnPlayer(string prefab, bool isMe, string nickname, bool displayHostBadge, Color glowColor, int spawnLayer, string team)

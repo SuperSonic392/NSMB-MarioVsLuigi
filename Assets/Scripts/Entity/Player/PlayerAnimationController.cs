@@ -81,8 +81,8 @@ public class PlayerAnimationController : MonoBehaviourPun {
             if (controller.knockback) {
                 targetEuler = new Vector3(0, controller.facingRight ? 110 : 250, 0);
                 instant = true;
-            } else if (controller.dead) {
-                if (animator.GetBool("firedeath") && deathTimer > deathUpTime) {
+            } else if (controller.dead || controller.inBubble) {
+                if (animator.GetBool("firedeath") && deathTimer > deathUpTime && !controller.inBubble) {
                     targetEuler = new Vector3(-15, controller.facingRight ? 110 : 250, 0);
                 } else {
                     targetEuler = new Vector3(0, 180, 0);
@@ -197,6 +197,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
         animator.SetBool("facingRight", (left ^ right) ? right : controller.facingRight);
         animator.SetBool("flying", controller.flying);
         animator.SetBool("drill", controller.drill);
+        animator.SetBool("inBubble", controller.inBubble);
 
         if (photonView.IsMine) {
             //Animation

@@ -9842,7 +9842,7 @@ GameObject:
   - component: {fileID: 4650389707823621600}
   - component: {fileID: 400746067041655496}
   - component: {fileID: 4009437874242587441}
-  - component: {fileID: 3726522286882790174}
+  - component: {fileID: 6315487180579485365}
   m_Layer: 10
   m_Name: PlayerTemplate
   m_TagString: Player
@@ -9888,6 +9888,7 @@ MonoBehaviour:
   displayHostBadge: 0
   glowColor: {r: 0, g: 0, b: 0, a: 0}
   spawnLayer: 0
+  tether: {fileID: 6315487180579485365}
   playerId: -1
   dead: 0
   spawned: 0
@@ -10523,7 +10524,7 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &3726522286882790174
+--- !u!114 &6315487180579485365
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -10532,16 +10533,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1976348097796555909}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 45b4e93b05fbe8545aa7949f5bbc6be6, type: 3}
+  m_Script: {fileID: 11500000, guid: 16b498adaa9f81841b7002861479a029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  player: {fileID: 6692913555763592350}
-  playerInputController: {fileID: 5042431224553726840}
-  state: 0
-  emotion: 0
-  personality: 0
-  stateTimer: 0
-  riskReward: 0
+  tetheredTo: {fileID: 0}
+  restLength: 4
+  tension: 0.75
+  tensionSlow: 1
+  tensionFast: 0.5
+  holding: 0
 --- !u!1 &3738650557538841698
 GameObject:
   m_ObjectHideFlags: 0
