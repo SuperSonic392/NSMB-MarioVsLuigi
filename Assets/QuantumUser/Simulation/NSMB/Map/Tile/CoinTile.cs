@@ -4,7 +4,7 @@ using Quantum;
 public unsafe class CoinTile : BreakableBrickTile {
 
     public StageTileInstance resultTile;
-
+    public bool isFuckass5CoinBlock;
     public override bool Interact(Frame f, EntityRef entity, InteractionDirection direction, IntVector2 tilePosition, StageTileInstance tileInstance, out bool playBumpSound) {
         if (base.Interact(f, entity, direction, tilePosition, tileInstance, out playBumpSound)) {
             return true;

@@ -117,6 +117,8 @@ namespace Quantum {
 
             var physicsObject = filter.PhysicsObject;
 
+            
+
             if (mario->GroundpoundStandFrames > 0) {
                 if (!physicsObject->IsTouchingGround) {
                     mario->GroundpoundStandFrames = 0;
@@ -184,6 +186,9 @@ namespace Quantum {
                 acc = physics.WalkMegaAcceleration[stage];
             } else {
                 acc = physics.WalkAcceleration[stage];
+            }
+            if (physicsObject->IsOnDamagingFloor) {
+                mario->Powerdown(f, filter.Entity, false, filter.Entity);
             }
 
             FP xVel = physicsObject->Velocity.X;

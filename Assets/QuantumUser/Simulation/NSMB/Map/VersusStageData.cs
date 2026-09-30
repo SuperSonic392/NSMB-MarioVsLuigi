@@ -58,6 +58,9 @@ public unsafe class VersusStageData : AssetObject, ISoundOverrideProvider {
     public AssetRef<LoopingMusicData> InvincibleMusic;
     public AssetRef<LoopingMusicData> MegaMushroomMusic;
 
+    [Header("-- Mod")]
+    public bool isFromSonicMod = false;
+
     [HideInInspector] public StageTileInstance[] TileData;
     [HideInInspector] public FPVector2[] BigStarSpawnpoints;
 

@@ -54,6 +54,7 @@ namespace Quantum {
     BakedInStage = 1,
     Dotted = 2,
     Objective = 4,
+    Floating = 8,
   }
   public enum EnemyKillReason : byte {
     Normal,

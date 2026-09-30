@@ -48,6 +48,9 @@ MonoBehaviour:
   LooseCoinPrototype:
     Id:
       Value: 1464681621458001613
+  LooseRingPrototype:
+    Id:
+      Value: 1531169365305825046
   Order: 100
   DefaultRules:
     Stage:

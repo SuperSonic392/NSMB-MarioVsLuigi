@@ -71,7 +71,7 @@ namespace NSMB.Quantum {
 
                     if (stageTile) {
                         if (stageTile.CollisionData.IsFullTile) {
-                            Gizmos.color = Color.red;
+                            Gizmos.color = stageTile.DamageOnTop ? Color.darkRed : Color.red;
                             Vector3 worldPosUnity = worldPos.ToUnityVector3();
                             Gizmos.DrawLineStrip(new Vector3[] {
                             worldPosUnity + new Vector3(-0.25f,  0.25f),
@@ -80,7 +80,7 @@ namespace NSMB.Quantum {
                             worldPosUnity + new Vector3(-0.25f, -0.25f)
                         }, true);
                         } else {
-                            Gizmos.color = Color.green;
+                            Gizmos.color = stageTile.DamageOnTop ? Color.darkRed : Color.green;
                             tile.GetWorldPolygons(null, stage, stageTile, VertexBuffer, ShapeVertexCountBuffer, worldPos);
 
                             int shapeIndex = 0;
@@ -97,8 +97,8 @@ namespace NSMB.Quantum {
                         }
                     }
 
-                    if (stageTile is CoinTile) {
-                        Gizmos.DrawIcon(worldPos.ToUnityVector3(), "Coin");
+                    if (stageTile is CoinTile coinTile) {
+                        Gizmos.DrawIcon(worldPos.ToUnityVector3(), coinTile.isFuckass5CoinBlock ? "5Coin" : "Coin");
                     } else if (stageTile is PowerupTile) {
                         Gizmos.DrawIcon(worldPos.ToUnityVector3(), "Powerup");
                     } else if (originalTile is TileInteractionRelocator tir2) {

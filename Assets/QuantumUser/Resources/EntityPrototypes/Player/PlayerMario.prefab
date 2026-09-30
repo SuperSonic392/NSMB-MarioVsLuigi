@@ -868,6 +868,8 @@ MonoBehaviour:
     type: 3}
   coinFromBlockParticle: {fileID: 4355208377719065490, guid: e55364fb26d178a4fbb31ba42edc3c9a,
     type: 3}
+  ringFromBlockParticle: {fileID: 4355208377719065490, guid: 13f4f3437e9c62944947a5ac1948bbdc,
+    type: 3}
   respawnParticle: {fileID: 5191653714546004373, guid: cb33e5df66c9644458081c1ddef24e6c,
     type: 3}
   starCollectParticle: {fileID: 817659606265668166, guid: 0d07cd0662b5f394fa4d95667c1d1814,
@@ -1212,8 +1214,6 @@ MonoBehaviour:
     SlowInLiquids:
       Value: 0
     IsWaterSolid:
-      Value: 0
-    BreakMegaObjects:
       Value: 0
 --- !u!114 &-2541758970786198444
 MonoBehaviour:

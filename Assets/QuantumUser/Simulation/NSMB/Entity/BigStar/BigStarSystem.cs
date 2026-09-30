@@ -56,7 +56,7 @@ namespace Quantum {
                 if (hits.Count == 0) {
                     // Hit no players
                     var gamemode = (StarChasersGamemode) f.FindAsset(f.Global->Rules.Gamemode);
-                    EntityRef newEntity = f.Create(gamemode.BigStarPrototype);
+                    EntityRef newEntity = f.Create(stage.isFromSonicMod ? gamemode.ChaosEmeraldPrototype : gamemode.BigStarPrototype);
                     f.Global->MainBigStar = newEntity;
                     var newStarTransform = f.Unsafe.GetPointer<Transform2D>(newEntity);
                     var newStar = f.Unsafe.GetPointer<BigStar>(newEntity);
@@ -226,7 +226,7 @@ namespace Quantum {
                 }
 
                 var gamemode = f.FindAsset(f.Global->Rules.Gamemode) as StarChasersGamemode;
-                EntityRef newStarEntity = f.Create(gamemode.BigStarPrototype);
+                EntityRef newStarEntity = f.Create(stage.isFromSonicMod ? gamemode.ChaosEmeraldPrototype : gamemode.BigStarPrototype);
                 var newStar = f.Unsafe.GetPointer<BigStar>(newStarEntity);
                 var newStarTransform = f.Unsafe.GetPointer<Transform2D>(newStarEntity);
                 newStarTransform->Position = transform->Position;

@@ -5,6 +5,7 @@ namespace Quantum {
     public unsafe class StarChasersGamemode : GamemodeAsset {
 
         public AssetRef<EntityPrototype> BigStarPrototype;
+        public AssetRef<EntityPrototype> ChaosEmeraldPrototype;
 
         public override void EnableGamemode(Frame f) {
             f.SystemEnable<BigStarSystem>();

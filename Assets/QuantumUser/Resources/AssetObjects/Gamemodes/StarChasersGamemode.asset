@@ -46,6 +46,10 @@ MonoBehaviour:
   LooseCoinPrototype:
     Id:
       Value: 1464681621458001613
+  LooseRingPrototype:
+    Id:
+      Value: 1531169365305825046
+  Order: 0
   DefaultRules:
     Stage:
       Id:
@@ -66,3 +70,6 @@ MonoBehaviour:
   BigStarPrototype:
     Id:
       Value: 1295981493910502871
+  ChaosEmeraldPrototype:
+    Id:
+      Value: 1398442423971230097

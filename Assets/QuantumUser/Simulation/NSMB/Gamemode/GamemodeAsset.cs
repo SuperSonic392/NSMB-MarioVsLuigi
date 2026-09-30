@@ -12,6 +12,7 @@ namespace Quantum {
         public AssetRef<CoinItemAsset>[] AllCoinItems;
         public AssetRef<CoinItemAsset> FallbackCoinItem;
         public AssetRef<EntityPrototype> LooseCoinPrototype;
+        public AssetRef<EntityPrototype> LooseRingPrototype;
         public int Order;
 
         public GameRulesPrototype DefaultRules;
@@ -225,7 +226,8 @@ namespace Quantum {
         }
 
         public virtual EntityRef SpawnLooseCoin(Frame f, FPVector2 position) {
-            EntityRef newCoinEntity = f.Create(LooseCoinPrototype);
+            var stage = f.FindAsset<VersusStageData>(f.Map.UserAsset);
+            EntityRef newCoinEntity = f.Create(stage.isFromSonicMod ? LooseRingPrototype : LooseCoinPrototype);
             var coinTransform = f.Unsafe.GetPointer<Transform2D>(newCoinEntity);
             var coinPhysicsObject = f.Unsafe.GetPointer<PhysicsObject>(newCoinEntity);
             coinTransform->Position = position;

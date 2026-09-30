@@ -105,7 +105,7 @@ namespace NSMB.Entities.Player {
 
         [Header("Prefabs")]
         [SerializeField] private GameObject coinNumberParticle;
-        [SerializeField] private GameObject coinFromBlockParticle, respawnParticle, starCollectParticle;
+        [SerializeField] private GameObject coinFromBlockParticle, ringFromBlockParticle, respawnParticle, starCollectParticle;
 
         [Header("Shaders")]
         [SerializeField] private Shader normalShader;
@@ -1015,6 +1015,7 @@ namespace NSMB.Entities.Player {
             }
 
             var mario = VerifiedFrame.Unsafe.GetPointer<MarioPlayer>(EntityRef);
+            var stage = VerifiedFrame.FindAsset<VersusStageData>(VerifiedFrame.Map.UserAsset);
 
             GameObject number = Instantiate(coinNumberParticle, e.CoinLocation.ToUnityVector3(), Quaternion.identity);
             number.GetComponentInChildren<NumberParticle>().Initialize(
@@ -1029,7 +1030,7 @@ namespace NSMB.Entities.Player {
             }
 
             if (e.CoinFromBlock) {
-                GameObject coin = Instantiate(coinFromBlockParticle, e.CoinLocation.ToUnityVector3(), Quaternion.identity);
+                GameObject coin = Instantiate(stage.isFromSonicMod ? ringFromBlockParticle : coinFromBlockParticle, e.CoinLocation.ToUnityVector3(), Quaternion.identity);
                 coin.GetComponentInChildren<Animator>().SetBool("down", e.Downwards);
                 Destroy(coin, 1);
             }

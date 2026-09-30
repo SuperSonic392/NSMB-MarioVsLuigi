@@ -7,5 +7,6 @@ namespace Quantum {
         IsOnSlipperyGround = 1 << 4,
         IsOnSlideableGround = 1 << 5,
         IsBeingCrushed = 1 << 6,
+        IsOnDamagingFloor = 1 << 7,
     }
 }

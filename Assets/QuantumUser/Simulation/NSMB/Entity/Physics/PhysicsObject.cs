@@ -31,6 +31,10 @@ namespace Quantum {
             readonly get => HasFlag(CurrentData, PhysicsFlags.IsOnSlipperyGround);
             set => SetFlag(ref CurrentData, PhysicsFlags.IsOnSlipperyGround, value);
         }
+        public bool IsOnDamagingFloor {
+            readonly get => HasFlag(CurrentData, PhysicsFlags.IsOnDamagingFloor);
+            set => SetFlag(ref CurrentData, PhysicsFlags.IsOnDamagingFloor, value);
+        }
         public bool IsBeingCrushed {
             readonly get => HasFlag(CurrentData, PhysicsFlags.IsBeingCrushed);
             set => SetFlag(ref CurrentData, PhysicsFlags.IsBeingCrushed, value);

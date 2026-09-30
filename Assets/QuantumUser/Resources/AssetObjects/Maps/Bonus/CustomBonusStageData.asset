@@ -78,6 +78,7 @@ MonoBehaviour:
   MegaMushroomMusic:
     Id:
       Value: 451321131049702687
+  isFromSonicMod: 0
   TileData:
   - Tile:
       Id:

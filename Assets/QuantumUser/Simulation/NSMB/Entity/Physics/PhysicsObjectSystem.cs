@@ -803,6 +803,7 @@ namespace Quantum {
 
                         physicsObject->IsOnSlideableGround |= tile.IsSlideableGround;
                         physicsObject->IsOnSlipperyGround |= tile.IsSlipperyGround;
+                        physicsObject->IsOnDamagingFloor |= tile.DamageOnTop;
                     }
 
                 } else if (verticalDot < -Constants.PhysicsGroundMaxAngleCos) {

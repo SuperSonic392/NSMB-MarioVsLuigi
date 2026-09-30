@@ -9,7 +9,7 @@ public class StageTile : AssetObject {
     public UnityEngine.Tilemaps.TileBase Tile;
 #endif 
     public TileCollisionData CollisionData = TileCollisionData.Default;
-    public bool IsSlipperyGround, IsSlideableGround, IsPolygon = true;
+    public bool IsSlipperyGround, IsSlideableGround, IsPolygon = true, DamageOnTop = false;
     public SoundEffect FootstepSound = SoundEffect.Player_Walk_Grass;
     public ParticleEffect FootstepParticle = ParticleEffect.None;
 
